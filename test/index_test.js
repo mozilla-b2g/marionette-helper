@@ -1,13 +1,11 @@
 suite('MarionetteHelper', function() {
-  Helper.client({
-    plugins: {
-      helper: require('../index')
-    }
-  });
-
   var subject;
+
+  var client = createClient();
+  marionette.plugin('helper', require('../index'));
+
   setup(function() {
-    subject = this.client.helper;
+    subject = client.helper;
   });
 
   test('#wait', function() {
