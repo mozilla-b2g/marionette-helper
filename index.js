@@ -40,7 +40,6 @@ MarionetteHelper.prototype = {
   /**
    * Wait for some amount of time by blocking via a marionette call.
    * Only ever use this for debugging!
-   * @param {Marionette.Client} client marionette client to use.
    * @param {number} millis number of seconds to sleep.
    */
   wait: function(millis) {
@@ -97,11 +96,10 @@ MarionetteHelper.prototype = {
 
   /**
    * Find some element and wait for it to be displayed.
-   * @param {Marionette.Client} client marionette client to use.
    * @param {Marionette.Element|string} el element or some css selector.
    * @return {Marionette.Element} Element we find with css selector.
    */
-  waitForElement: function(client, el) {
+  waitForElement: function(el) {
     if (typeof el === 'string') {
       el = this.client.findElement(el);
     }
