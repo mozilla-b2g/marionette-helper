@@ -100,10 +100,23 @@ MarionetteHelper.prototype = {
    * @return {Marionette.Element} Element we find with css selector.
    */
   waitForElement: function(el) {
+    var client = this.client;
+    // make sure that we could get the element in DOM
     if (typeof el === 'string') {
-      el = this.client.findElement(el);
+      client.waitFor(function() {
+        var condition = false;
+        client.findElement(el, function(error, element) {
+          if (error) {
+            return;
+          }
+          el = element;
+          condition = true;
+        });
+        return condition;
+      });
     }
-    this.client.waitFor(function() { return el.displayed(); });
+
+    client.waitFor(function() { return el.displayed(); });
     return el;
   }
 };
