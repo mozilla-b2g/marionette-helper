@@ -99,10 +99,10 @@ MarionetteHelper.prototype = {
    * @param {Marionette.Element|string} el element or some css selector.
    * @return {Marionette.Element} Element we find with css selector.
    */
-  waitForElement: function(el) {
+  waitForElement: function(el, callback) {
     var client = this.client;
     // make sure that we could get the element in DOM
-    if (typeof el === 'string') {
+    if (typeof(el) === 'string') {
       client.waitFor(function() {
         var condition = false;
         client.findElement(el, function(error, element) {
@@ -116,7 +116,13 @@ MarionetteHelper.prototype = {
       });
     }
 
-    client.waitFor(function() { return el.displayed(); });
-    return el;
+    client.waitFor(function() {
+      if (typeof(el) === 'object' && el.displayed()) {
+        if (callback && typeof(callback) === 'function') {
+          callback();
+        }
+        return true;
+      }
+    });
   }
 };
