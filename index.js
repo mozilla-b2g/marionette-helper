@@ -1,3 +1,6 @@
+var Marionette = require('marionette-client');
+
+
 /**
  * @constructor
  * @param {Marionette.Client} client Marionette client to use.
@@ -101,22 +104,14 @@ MarionetteHelper.prototype = {
    */
   waitForElement: function(el) {
     var client = this.client;
-    // make sure that we could get the element in DOM
-    if (typeof el === 'string') {
-      client.waitFor(function() {
-        var condition = false;
-        client.findElement(el, function(error, element) {
-          if (error) {
-            return;
-          }
-          el = element;
-          condition = true;
-        });
-        return condition;
-      });
+
+    if (el instanceof Marionette.Element) {
+      client.waitFor(function() { return el.displayed(); });
+      return el;
     }
 
-    client.waitFor(function() { return el.displayed(); });
-    return el;
+    var result = client.findElement(el);
+    return this.waitForElement(
+      (result instanceof Marionette.Element) ? result : el);
   }
 };
