@@ -24,7 +24,7 @@ suite('MarionetteHelper', function() {
     }, function() {
       assert.strictEqual(i, 5);
       done();
-    });
+    }, 50, 1000);
   });
 
   test.skip('#waitForElement', function() {

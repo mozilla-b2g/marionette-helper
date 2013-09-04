@@ -92,7 +92,7 @@ MarionetteHelper.prototype = {
     }
 
     var next = this._waitFor.bind(
-        this, test, callback, timeout - interval, interval);
+        this, test, callback, interval, timeout - interval);
     setTimeout(next, interval);
   },
 
@@ -105,13 +105,29 @@ MarionetteHelper.prototype = {
   waitForElement: function(el) {
     var client = this.client;
 
-    if (el instanceof Marionette.Element) {
+    if (isElement(el)) {
       client.waitFor(function() { return el.displayed(); });
       return el;
     }
 
     var result = client.findElement(el);
-    return this.waitForElement(
-      (result instanceof Marionette.Element) ? result : el);
+    return this.waitForElement(isElement(result) ? result : el);
   }
 };
+
+
+/**
+ * @param {Object} maybeElement something that could or could not be an el.
+ * @return {boolean} Whether or not we have an element.
+ * @private
+ */
+function isElement(maybeElement) {
+  if (!maybeElement) {
+    return false;
+  }
+  if (maybeElement instanceof Marionette.Element) {
+    return true;
+  }
+
+  return typeof(maybeElement.id) === 'string' && maybeElement.client;
+}
