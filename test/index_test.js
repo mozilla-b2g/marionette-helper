@@ -13,7 +13,6 @@ suite('MarionetteHelper', function() {
     var before = new Date().getTime();
     subject.wait(1000);
     var after = new Date().getTime();
-    console.log(after - before);
     assert.ok(after - before >= 1000);
   });
 
