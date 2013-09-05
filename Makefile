@@ -21,4 +21,4 @@ test-sync:
 	SYNC=true ./node_modules/.bin/marionette-mocha $(MOCHA_OPTS)
 
 .PHONY: test
-test: b2g test-sync test-async
+test: b2g test-sync
