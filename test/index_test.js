@@ -3,6 +3,7 @@ suite('MarionetteHelper', function() {
 
   var client = createClient();
   marionette.plugin('helper', require('../index'));
+  marionette.plugin('apps', require('marionette-apps'));
 
   setup(function(done) {
     subject = client.helper;
@@ -16,19 +17,21 @@ suite('MarionetteHelper', function() {
     assert.ok(after - before >= 1000);
   });
 
-
-  test('#waitFor', function(done) {
+  test('#waitFor', function() {
     var i = 0;
     subject.waitFor(function() {
       i++;
       return i > 4;
     }, function() {
       assert.strictEqual(i, 5);
-      done();
     }, 50, 1000);
   });
 
-  test.skip('#waitForElement', function() {
-    // TODO(gaye)
+  test('#waitForElement', function() {
+    var CLOCK_ORIGIN = 'app://clock.gaiamobile.org';
+    client.apps.launch(CLOCK_ORIGIN);
+    client.apps.switchToApp(CLOCK_ORIGIN);
+    subject.waitForElement('body');
+    assert.ok(true);
   });
 });

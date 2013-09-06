@@ -11,6 +11,7 @@
   },
 
   "devDependencies": {
+    "marionette-apps": "0.3.0",
     "marionette-host-environment": "0.3.3",
     "marionette-js-runner": "~0.0.1",
     "mozilla-download": "~0.2.1",
