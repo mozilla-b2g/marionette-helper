@@ -6,7 +6,7 @@ suite('MarionetteHelper', function() {
 
   setup(function(done) {
     subject = client.helper;
-    setTimeout(done, 2500);   // In the stead of using the BootWatcher.
+    setTimeout(done, 2500);  // In the stead of using the BootWatcher.
   });
 
   test('#wait', function() {
@@ -28,7 +28,17 @@ suite('MarionetteHelper', function() {
     }, 50, 1000);
   });
 
-  test.skip('#waitForElement', function() {
-    // TODO(gaye)
+  test('#waitForElement exists', function(done) {
+    subject.waitForElement('#screen');
+    done();
+  });
+
+  test('#waitForElement does not exist', function(done) {
+    try {
+      subject.waitForElement('#not-so-much-there');
+    } catch (e) {
+      assert.strictEqual(e.type, 'NoSuchElement');
+      done();
+    }
   });
 });
