@@ -2,13 +2,14 @@ var Marionette = require('marionette-client');
 
 
 /**
- * @constructor
  * @param {Marionette.Client} client Marionette client to use.
+ * @constructor
  */
 function MarionetteHelper(client) {
   this.client = client;
 }
 module.exports = MarionetteHelper;
+
 
 /**
  * Make a new helper.
@@ -53,8 +54,9 @@ MarionetteHelper.prototype = {
 
 
   /**
-   * Similar to Marionette.Client#waitFor except that the test gets
-   * executed in node rather than gecko.
+   * ~*~*~*~*~ o_O Deprecated o_O ~*~*~*~*~
+   * Use client#waitFor instead!
+   *
    * @param {Function} test some function that returns a boolean.
    * @param {Function} callback function to invoke when test pass or timeout.
    * @param {Object} opt_context Optional context object for test block.
@@ -62,38 +64,10 @@ MarionetteHelper.prototype = {
    * @param {number} opt_timeout Optional test timeout in millis.
    */
   waitFor: function(test, callback, opt_context, opt_interval, opt_timeout) {
-    // If context provided, bind test to context.
-    if (opt_context) {
-      test = test.bind(opt_context);
-    }
-
-    this._waitFor(test, callback,
-        opt_interval || MarionetteHelper.DEFAULT_TEST_INTERVAL,
-        opt_timeout || MarionetteHelper.DEFAULT_TEST_TIMEOUT);
-  },
-
-
-  /**
-   * Helper method for MarionetteHelper#waitFor.
-   * @param {Function} test some function that returns a boolean.
-   * @param {Function} callback function to invoke when test pass or timeout.
-   * @param {number} interval test frequency in millis.
-   * @param {number} timeout test timeout in millis.
-   */
-  _waitFor: function(test, callback, interval, timeout) {
-    if (timeout <= 0) {
-      callback(new Error('timeout exceeded for ' + test.toString()));
-      return;
-    }
-
-    if (test()) {
-      callback(null);
-      return;
-    }
-
-    var next = this._waitFor.bind(
-        this, test, callback, interval, timeout - interval);
-    setTimeout(next, interval);
+    this.client.waitFor(test, {
+      interval: opt_interval,
+      timeout: opt_timeout
+    }, callback);
   },
 
 
@@ -105,13 +79,12 @@ MarionetteHelper.prototype = {
   waitForElement: function(el) {
     var client = this.client;
 
-    if (isElement(el)) {
-      client.waitFor(function() { return el.displayed(); });
-      return el;
+    while (!isElement(el)) {
+      el = client.findElement(el);
     }
 
-    var result = client.findElement(el);
-    return this.waitForElement(isElement(result) ? result : el);
+    client.waitFor(function() { return el.displayed(); });
+    return el;
   }
 };
 
@@ -122,12 +95,6 @@ MarionetteHelper.prototype = {
  * @private
  */
 function isElement(maybeElement) {
-  if (!maybeElement) {
-    return false;
-  }
-  if (maybeElement instanceof Marionette.Element) {
-    return true;
-  }
-
-  return typeof(maybeElement.id) === 'string' && maybeElement.client;
+  return maybeElement && (maybeElement instanceof Marionette.Element ||
+                         (!!maybeElement.id && !!maybeElement.client));
 }
