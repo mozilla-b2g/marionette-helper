@@ -12,6 +12,13 @@ module.exports = MarionetteHelper;
 
 
 /**
+ * DOM id for window.alert() and window.confirm() message container.
+ * @type {string}
+ */
+MarionetteHelper.ALERT_ID = '#modal-dialog-confirm-message';
+
+
+/**
  * Make a new helper.
  * @param {Marionette.Client} client Marionette client to use.
  * @param {Object} options Optional map of attributes for Apps.
@@ -58,16 +65,52 @@ MarionetteHelper.prototype = {
    * Use client#waitFor instead!
    *
    * @param {Function} test some function that returns a boolean.
-   * @param {Function} callback function to invoke when test pass or timeout.
+   * @param {Function} opt_callback optional function to invoke when test
+   *     passes or times out.
    * @param {Object} opt_context Optional context object for test block.
    * @param {number} opt_interval Optional test frequency in millis.
    * @param {number} opt_timeout Optional test timeout in millis.
    */
-  waitFor: function(test, callback, opt_context, opt_interval, opt_timeout) {
+  waitFor: function(test, opt_callback, opt_context, opt_interval,
+      opt_timeout) {
     this.client.waitFor(test, {
       interval: opt_interval,
       timeout: opt_timeout
-    }, callback);
+    }, opt_callback);
+  },
+
+
+  /**
+   * Wait until a window.alert() or window.confirm() message comes up.
+   *
+   * @param {string|RegExp} alert to look for. If passed a string, we will
+   *     check whether the string is a substring of the alert. If passed a
+   *     RegExp, we will check whether it matches the alert.
+   * @param {Function} opt_callback optinal function to invoke when alert
+   *      becomes visible.
+   * @param {number} opt_timeout Optional test timeout in millis.
+   */
+  waitForAlert: function(alert, opt_callback, opt_timeout) {
+    if (typeof opt_callback === 'number') {
+      opt_timeout = opt_callback;
+      opt_callback = null;
+    }
+
+    if (typeof alert === 'string') {
+      // Convert the alert to a RegExp.
+      alert = new RegExp('.*' + alert + '.*');
+    }
+
+    // TODO(gaye): Perhaps we should save the iframe we're in?
+    this.client.switchToFrame();
+    this.client.waitFor(function() {
+      var msg = this.client
+          .findElement(MarionetteHelper.ALERT_ID)
+          .text();
+      return alert.test(msg);
+    }.bind(this), {
+      timeout: opt_timeout
+    }, opt_callback);
   },
 
 

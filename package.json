@@ -1,13 +1,13 @@
 {
   "name": "marionette-helper",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "author": {
     "name": "Gareth Aye",
     "email": "gaye@mozilla.com"
   },
 
   "dependencies": {
-    "marionette-client": "~0.15.2"
+    "marionette-client": "~0.15.4"
   },
 
   "devDependencies": {
