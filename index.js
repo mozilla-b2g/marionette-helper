@@ -104,6 +104,8 @@ MarionetteHelper.prototype = {
     // TODO(gaye): Perhaps we should save the iframe we're in?
     this.client.switchToFrame();
     this.client.waitFor(function() {
+      // TODO(gaye): Update this to do a less brittle check once we have
+      //     marionette server support.
       var msg = this.client
           .findElement(MarionetteHelper.ALERT_ID)
           .text();
