@@ -12,10 +12,10 @@ module.exports = MarionetteHelper;
 
 
 /**
- * DOM id for window.alert() and window.confirm() message container.
+ * DOM selector for window.confirm() message container.
  * @type {string}
  */
-MarionetteHelper.ALERT_ID = '#modal-dialog-confirm-message';
+MarionetteHelper.CONFIRM_SELECTOR = '.modal-dialog-confirm-message';
 
 
 /**
@@ -106,10 +106,11 @@ MarionetteHelper.prototype = {
     this.client.waitFor(function() {
       // TODO(gaye): Update this to do a less brittle check once we have
       //     marionette server support.
-      var msg = this.client
-          .findElement(MarionetteHelper.ALERT_ID)
-          .text();
-      return alert.test(msg);
+      var elements =
+        this.client.findElements(MarionetteHelper.CONFIRM_SELECTOR);
+      return elements.some(function test(element) {
+        return alert.test(element.text());
+      });
     }.bind(this), {
       timeout: opt_timeout
     }, opt_callback);
