@@ -7,7 +7,7 @@
   },
 
   "dependencies": {
-    "marionette-client": "~0.15.4"
+    "marionette-client": "~1.0.0"
   },
 
   "devDependencies": {
