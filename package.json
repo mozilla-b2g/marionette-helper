@@ -6,8 +6,8 @@
     "email": "gaye@mozilla.com"
   },
 
-  "dependencies": {
-    "marionette-client": "~1.0.0"
+  "peerDependencies": {
+    "marionette-client": ">=1.1.0"
   },
 
   "devDependencies": {
