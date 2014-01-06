@@ -10,6 +10,10 @@
     "marionette-client": ">=1.1.0"
   },
 
+  "dependencies": {
+    "marionette-apps": "~0.3.3"
+  },
+
   "devDependencies": {
     "marionette-host-environment": "0.3.3",
     "marionette-js-runner": "~0.0.1",

@@ -10,13 +10,15 @@ function MarionetteHelper(client) {
 }
 module.exports = MarionetteHelper;
 
-
 /**
  * DOM id for window.alert() and window.confirm() message container.
  * @type {string}
  */
 MarionetteHelper.ALERT_ID = '#modal-dialog-confirm-message';
-
+MarionetteHelper.SELECT_POPUP_LI_SEL =
+  '#select-option-popup li[role="option"] span';
+MarionetteHelper.SELECT_POPUP_OK_SEL =
+  '#select-option-popup button.value-option-confirm';
 
 /**
  * Make a new helper.
@@ -28,18 +30,15 @@ MarionetteHelper.setup = function(client, options) {
   return new MarionetteHelper(client);
 };
 
-
 /**
  * @const {number}
  */
 MarionetteHelper.DEFAULT_TEST_INTERVAL = 100;
 
-
 /**
  * @const {number}
  */
 MarionetteHelper.DEFAULT_TEST_TIMEOUT = 5000;
-
 
 MarionetteHelper.prototype = {
   /**
@@ -179,6 +178,110 @@ MarionetteHelper.prototype = {
         throw err;
       }
     });
+  },
+
+  /**
+   * Select an item from a select tag by string.
+   * (Based on Gaia customized select-option-popup)
+   *
+   * @param {Marionette.Element|String} el element orcss selector to the select
+   * @param {String} optionText which option do you want to select.
+   */
+  tapSelectOption: function(el, optionText) {
+    var selectedOption = null;
+
+    // We have to get the original frame
+    var originalFrame = this.client.executeScript(function() {
+      return window.frameElement &&
+             window.frameElement.src;
+    });
+
+    if (!originalFrame) {
+      originalFrame = this.client.getUrl();
+      originalFrame = originalFrame.match(/.*:\/\/[^\/]*/)[0];
+    }
+
+    if (!isElement(el)) {
+      el = this.client.findElement(el);
+    }
+
+    // XXX: Workaround to click the "el" element.
+    // Please check related bug on http://bugzil.la/964651
+    // this.waitForElement(el).tap();
+
+    this._sendCreateOptionsEvent(el);
+
+    // Make sure system already generate the select/option
+    this.waitForElement(MarionetteHelper.SELECT_POPUP_LI_SEL);
+    this.client.findElements(
+      MarionetteHelper.SELECT_POPUP_LI_SEL
+    ).some(function(el) {
+      if (el.text() === optionText) {
+        selectedOption = el;
+        return true;
+      }
+      return false;
+    });
+
+    // Select the option
+    this.waitForElement(selectedOption).tap();
+    this.waitForElement(
+      MarionetteHelper.SELECT_POPUP_OK_SEL
+    ).tap();
+
+    // Switch to original iframe.
+    if (originalFrame && this.client.apps) {
+      this.client.apps.switchToApp(originalFrame);
+    }
+  },
+
+  // XXX After some testing, it seems that we can't make this cromeEvent
+  // on Travis, in this way I make this temporary hack to make following
+  // tests works. If this problem got fixed, remember to remove this.
+  _sendCreateOptionsEvent: function(el) {
+    var choices = {
+      multiple: false,
+      choices: []
+    };
+
+    el.findElements('option').forEach(function(optionEl, index) {
+      choices.choices.push({
+        group: false,
+        inGroup: false,
+        text: optionEl.text(),
+        disabled: false,
+        selected: optionEl.selected(),
+        optionIndex: index
+      });
+    });
+
+    // XXX we have to pretend that gecko has focused on the select
+    // before to make sure mozKeyboard method can be triggered to
+    // update the value back to select
+    el.scriptWith(function(element) {
+      return element.focus();
+    });
+
+    // Then jump to system app
+    this.client.switchToFrame();
+
+    var sendInputMethodContextChangeEvent = function(choices) {
+      window.wrappedJSObject.dispatchEvent(
+        new window.wrappedJSObject.CustomEvent('mozChromeEvent', {
+          detail: {
+            'type': 'inputmethod-contextchange',
+            'inputType': 'select-one',
+            'value': 'zh-TW',
+            'choices': choices,
+            'min': '',
+            'max': ''
+          }
+        })
+      );
+    };
+
+    this.client.executeScript(sendInputMethodContextChangeEvent,
+      [JSON.stringify(choices)]);
   }
 };
 
