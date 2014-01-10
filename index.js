@@ -133,6 +133,23 @@ MarionetteHelper.prototype = {
   },
 
   /**
+   * Wait for a child element of some parent to be added to the DOM
+   * and displayed.
+   *
+   * @param {Marionette.Element|string} parent element or css selector.
+   * @param {Marionette.Element|string} el element or css selector.
+   * @return {Marionette.Element} Element we find with css selector.
+   */
+  waitForChild: function(parent, el) {
+    parent = this.waitForElement(parent);
+    if (!isElement(el)) {
+      el = parent.findElement(el);
+    }
+
+    return this.waitForElement(el);
+  },
+
+  /**
    * Wait for an element either hidden or removed from the dom
    * @param {Marionette.Element|string} el element or some css selector.
    */
