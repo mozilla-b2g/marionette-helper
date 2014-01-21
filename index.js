@@ -10,13 +10,15 @@ function MarionetteHelper(client) {
 }
 module.exports = MarionetteHelper;
 
-
 /**
  * DOM id for window.alert() and window.confirm() message container.
  * @type {string}
  */
 MarionetteHelper.ALERT_ID = '#modal-dialog-confirm-message';
 
+MarionetteHelper.SELECT_POPUP = '#select-option-popup';
+MarionetteHelper.SELECT_POPUP_LI_SEL = 'li[role="option"] span';
+MarionetteHelper.SELECT_POPUP_OK_SEL = 'button.value-option-confirm';
 
 /**
  * Make a new helper.
@@ -28,18 +30,15 @@ MarionetteHelper.setup = function(client, options) {
   return new MarionetteHelper(client);
 };
 
-
 /**
  * @const {number}
  */
 MarionetteHelper.DEFAULT_TEST_INTERVAL = 100;
 
-
 /**
  * @const {number}
  */
 MarionetteHelper.DEFAULT_TEST_TIMEOUT = 5000;
-
 
 MarionetteHelper.prototype = {
   /**
@@ -179,6 +178,54 @@ MarionetteHelper.prototype = {
         throw err;
       }
     });
+  },
+
+  /**
+   * Select an item from a select tag by string.
+   * (Based on Gaia customized select-option-popup)
+   *
+   * @param {Marionette.Element|String} el element or some css selector.
+   * @param {String} optionText which option do you want to select.
+   */
+  tapSelectOption: function(el, optionText) {
+    // we have to get the original frame
+    var cachedFrame = this.client.executeScript(function() {
+      return window.frameElement &&
+             window.frameElement.src;
+    });
+
+    // then jump to system app
+    this.client.switchToFrame();
+
+    var selectedOption;
+    // Wait for our css selector to pick up some element with optionText.
+    el = this.waitForElement(el);
+    this.client.waitFor(function() {
+      el.tap();
+      return this.client.findElements(
+        MarionetteHelper.SELECT_POPUP + ' ' +
+        MarionetteHelper.SELECT_POPUP_LI_SEL
+      ).some(function(el) {
+        if (el.text() === optionText) {
+          selectedOption = el;
+          return true;
+        }
+
+        return false;
+      });
+    }.bind(this));
+
+    // then select the option
+    this.waitForElement(selectedOption).tap();
+    this.waitForElement(
+      MarionetteHelper.SELECT_POPUP + ' ' +
+      MarionetteHelper.SELECT_POPUP_OK_SEL
+    ).tap();
+
+    // try to switch back to original iframe
+    if (cachedFrame && this.client.apps) {
+      this.client.apps.switchToApp(cachedFrame);
+    }
   }
 };
 
