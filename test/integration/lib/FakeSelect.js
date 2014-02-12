@@ -23,7 +23,7 @@ FakeSelect.prototype = {
     return this.client.findElement(FakeSelect.Selector.selectedOptionElement);
   },
   isOptionSelected: function(value) {
-    console.log(this.selectedOption);
+    console.log(this.selectedOption.text());
     return value == this.selectedOption.text();
   },
   launch: function() {
