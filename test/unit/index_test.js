@@ -2,7 +2,7 @@ suite('MarionetteHelper', function() {
   var subject;
 
   var client = createClient();
-  marionette.plugin('helper', require('../index'));
+  marionette.plugin('helper', require('../../index'));
 
   setup(function(done) {
     subject = client.helper;

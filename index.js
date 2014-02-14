@@ -179,6 +179,40 @@ MarionetteHelper.prototype = {
         throw err;
       }
     });
+  },
+
+  /**
+   * select specific option from target select element
+   * @param {Marionette.Element|String} el element or some css selector.
+   * @param {String} optionText text for the option
+   */
+  tapSelectOption: function(el, optionText) {
+    var selectedOption = null;
+
+    if (!isElement(el)) {
+      el = this.client.findElement(el);
+    }
+
+    el.findElements('option').some(function(optionEl) {
+      if (optionEl.text() === optionText) {
+        selectedOption = optionEl;
+        return true;
+      }
+      return false;
+    });
+
+    selectedOption.scriptWith(function(selectedOptionEl) {
+      selectedOptionEl.selected = true;
+    });
+
+    el.scriptWith(function(selectEl) {
+      var evt = new Event('change', {
+        'view': window,
+        'bubbles': true,
+        'cancelable': true
+      });
+      selectEl.dispatchEvent(evt);
+    });
   }
 };
 
