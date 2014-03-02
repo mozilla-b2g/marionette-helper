@@ -54,7 +54,18 @@ MarionetteHelper.prototype = {
    * @param {number} millis number of seconds to sleep.
    */
   wait: function(millis) {
-    this.client.executeAsyncScript(function(millis) {
+    // Add a small value to the scriptTimeout used for this
+    // `executeAsyncScript` invocation in order to account for the lack of
+    // millisecond precision in `setTimeout`.
+    var schedulerTolerance = 1000;
+    // Ensure that the asynchronous script will not raise a timeout error, even
+    // when the requested duration exceeds the client's current `scriptTimeout`
+    // value.
+    var scope = this.client.scope({
+      scriptTimeout: millis + schedulerTolerance
+    });
+
+    scope.executeAsyncScript(function(millis) {
       setTimeout(marionetteScriptFinished, millis);
     }, [millis]);
   },
