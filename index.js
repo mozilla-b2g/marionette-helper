@@ -193,72 +193,11 @@ MarionetteHelper.prototype = {
   },
 
   /**
-   * Tap input element and fill the value.
-   * To do: Support the time, date, datetime, and datetime-local input
-   * correctly.
-   * Please refer to http://bugzil.la/976453.
-   *
-   * @param {Marionette.Element|String} el marionette element object or
-   *                                    css selector.
-   * @param {String|Object} input text or datetime object for the input.
-   */
-  fillInputField: function(el, input) {
-
-    if (!isElement(el)) {
-      el = this.client.findElement(el);
-    }
-
-    if (input instanceof Date) {
-      // XXX: bug 978685
-      // We cannot get type through element.getAttribute('type') if the type is
-      // datetime or datetime-local, so we use below workaround.
-      var eleType = this.client.executeScript(function(el) {
-        return el.getAttribute('type');
-      }, [el]);
-
-      switch (eleType) {
-        case 'date':
-          input = input.getFullYear() + '-' + addLeadZero(input.getMonth()) +
-                  '-' + addLeadZero(input.getDate());
-          break;
-        case 'time':
-          input = addLeadZero(input.getHours()) + ':' +
-                  addLeadZero(input.getMinutes());
-          break;
-        case 'datetime':
-          input = input.getFullYear() + '-' + addLeadZero(input.getMonth()) +
-                  '-' + addLeadZero(input.getDate()) + 'T' +
-                  addLeadZero(input.getHours()) + ':' +
-                  addLeadZero(input.getMinutes()) + ':' +
-                  addLeadZero(input.getSeconds()) + 'Z';
-          break;
-      }
-    }
-
-    // Below script is to trigger input event on the input correctly and fill
-    // the data.
-    this.client.executeScript(function(el, value) {
-      el.value = value;
-      var evt = new Event('input', {
-        'view': window,
-        'bubbles': true,
-        'cancelable': true
-      });
-      el.dispatchEvent(evt);
-    }, [el, input]);
-
-    function addLeadZero(num) {
-      return num >= 10 ? num : ('0' + num);
-    }
-  },
-
-  /**
-   * Select specific option from target select element.
-   *
+   * select specific option from target select element
    * @param {Marionette.Element|String} el element or some css selector.
-   * @param {String} optionText text for the option.
+   * @param {String} optionText text for the option
    */
-  selectSelectOption: function(el, optionText) {
+  tapSelectOption: function(el, optionText) {
     var selectedOption = null;
 
     if (!isElement(el)) {
