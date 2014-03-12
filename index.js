@@ -296,6 +296,36 @@ MarionetteHelper.prototype = {
       });
       selectEl.dispatchEvent(evt);
     });
+  },
+
+  /**
+   * Get the first element that matches the selector by testing the element
+   * itself and traversing up through its ancestors in the DOM tree.
+   *
+   * @param {Marionette.Element|String} el element or some css selector where
+   *                                    the search should start.
+   * @param {String} selector A string containing a selector expression to
+   *                          match elements against.
+   * @return {Marionette.Element|undefined} Element found by selector
+   */
+  closest: function(el, selector) {
+    if (!isElement(el)) {
+      el = this.client.findElement(el);
+    }
+
+    var result = this.client.executeScript(function(el, selector) {
+      // HTMLDocument doesn't have mozMatchesSelector and can't be matched
+      while (el && el !== document.documentElement) {
+        // XXX: firefox 30 still needs prefix
+        if (el.mozMatchesSelector(selector)) {
+          return el;
+        }
+        el = el.parentNode;
+      }
+    }, [el, selector]);
+
+    // executeScript returns "null" by default
+    return result || undefined;
   }
 };
 
