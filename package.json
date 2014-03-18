@@ -1,13 +1,13 @@
 {
   "name": "marionette-helper",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "author": {
     "name": "The Gaia Team",
     "email": "dev-gaia@lists.mozilla.org"
   },
 
   "peerDependencies": {
-    "marionette-client": "~1.1.1"
+    "marionette-client": ">=1.0.0"
   },
 
   "dependencies": {
