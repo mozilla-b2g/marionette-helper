@@ -1,9 +1,9 @@
 {
   "name": "marionette-helper",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "author": {
-    "name": "Gareth Aye",
-    "email": "gaye@mozilla.com"
+    "name": "The Gaia Team",
+    "email": "dev-gaia@lists.mozilla.org"
   },
 
   "peerDependencies": {
