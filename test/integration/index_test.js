@@ -18,6 +18,7 @@ suite('MarionetteHelper.fillInputFieldAndtapSelectOption', function() {
       'ftu.manifestURL': null,
       'lockscreen.enabled': false
     },
+
     apps: apps
   });
 
