@@ -40,6 +40,13 @@ suite('MarionetteHelper.fillInputFieldAndtapSelectOption', function() {
     assert.ok(fakeApp.isSpecificSelectOptionSelected(optionValue));
   });
 
+  test('should emit change and blur events', function() {
+    helper.tapSelectOption('#select', 'option2');
+    assert.ok(fakeApp.didEventFire('change'));
+    helper.tapSelectConfirm('#select');
+    assert.ok(fakeApp.didEventFire('blur'));
+  });
+
   test('should set value on input', function() {
     var inputValue = 'inputtest';
     helper.fillInputField('#input', inputValue);
