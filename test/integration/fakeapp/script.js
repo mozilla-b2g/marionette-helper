@@ -1,15 +1,18 @@
 (function() {
   'use strict';
 
-  var select = document.getElementById('select');
-  var emitted = document.getElementById('emitted');
-
+  var selects = ['select', 'multi'];
   var events = ['change', 'blur'];
+
   events.forEach(function(evtName) {
-    select.addEventListener(evtName, showEvent);
+    selects.forEach(function(selectId) {
+      document.getElementById(selectId)
+              .addEventListener(evtName, showEvent.bind(null, selectId));
+    });
   });
 
-  function showEvent(evt) {
+  function showEvent(selectId, evt) {
+    var emitted = document.getElementById(selectId + '-events');
     emitted.textContent += evt.type;
   }
 

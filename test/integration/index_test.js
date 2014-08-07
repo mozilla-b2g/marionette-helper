@@ -40,11 +40,28 @@ suite('MarionetteHelper.fillInputFieldAndtapSelectOption', function() {
     assert.ok(fakeApp.isSpecificSelectOptionSelected(optionValue));
   });
 
-  test('should emit change and blur events', function() {
+  test('should emit change and blur events for one option', function() {
     helper.tapSelectOption('#select', 'option2');
-    assert.ok(fakeApp.didEventFire('change'));
+    assert.ok(fakeApp.didEventFire('select', 'change'));
     helper.tapSelectConfirm('#select');
-    assert.ok(fakeApp.didEventFire('blur'));
+    assert.ok(fakeApp.didEventFire('select', 'blur'));
+  });
+
+  test('should set multiple options', function() {
+    var optionValues = ['multi2', 'multi3'];
+    helper.tapSelectOption('#multi', optionValues[0]);
+    helper.tapSelectOption('#multi', optionValues[1]);
+    assert.ok(fakeApp.isSpecificMultiOptionSelected(optionValues[0]));
+    assert.ok(fakeApp.isSpecificMultiOptionSelected(optionValues[1]));
+  });
+
+  test('should emit change and blur events for multiple options', function() {
+    helper.tapSelectOption('#multi', 'multi2');
+    assert.ok(fakeApp.didEventFire('multi', 'change'));
+    helper.tapSelectOption('#multi', 'multi3');
+    assert.ok(fakeApp.didEventFire('multi', 'change'));
+    helper.tapSelectConfirm('#multi');
+    assert.ok(fakeApp.didEventFire('multi', 'blur'));
   });
 
   test('should set value on input', function() {

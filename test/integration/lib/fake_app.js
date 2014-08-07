@@ -10,7 +10,10 @@ function FakeApp(client, origin) {
 FakeApp.Selector = Object.freeze({
   selectElement: '#select',
   selectedOptionElement: '#select option:checked',
-  emittedElement: '#emitted',
+  selectEventsElement: '#select-events',
+  multiElement: '#multi',
+  multiOptionElements: '#multi option:checked',
+  multiEventsElement: '#multi-events',
   inputElement: '#input',
   inputDateElement: '#input-date',
   inputTimeElement: '#input-time',
@@ -47,14 +50,28 @@ FakeApp.prototype = {
   get selectedOption() {
     return this.client.findElement(FakeApp.Selector.selectedOptionElement);
   },
-  get emittedEvent() {
-    return this.client.findElement(FakeApp.Selector.emittedElement);
+  get selectEvents() {
+    return this.client.findElement(FakeApp.Selector.selectEventsElement);
   },
   isSpecificSelectOptionSelected: function(value) {
     return value == this.selectedOption.text();
   },
-  didEventFire: function(name) {
-    return this.emittedEvent.text().indexOf(name) > -1;
+  get multiElement() {
+    return this.client.findElement(FakeApp.Selector.multiElement);
+  },
+  get multiOptions() {
+    return this.client.findElements(FakeApp.Selector.multiOptionElements);
+  },
+  get multiEvents() {
+    return this.client.findElement(FakeApp.Selector.multiEventsElement);
+  },
+  isSpecificMultiOptionSelected: function(value) {
+    return this.multiOptions.some(function(option) {
+      return value == option.text();
+    });
+  },
+  didEventFire: function(element, name) {
+    return this[element + 'Events'].text().indexOf(name) > -1;
   },
   launch: function() {
     this.client.apps.launch(this.origin);
