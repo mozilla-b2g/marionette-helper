@@ -10,6 +10,7 @@ function FakeApp(client, origin) {
 FakeApp.Selector = Object.freeze({
   selectElement: '#select',
   selectedOptionElement: '#select option:checked',
+  emittedElement: '#emitted',
   inputElement: '#input',
   inputDateElement: '#input-date',
   inputTimeElement: '#input-time',
@@ -46,8 +47,14 @@ FakeApp.prototype = {
   get selectedOption() {
     return this.client.findElement(FakeApp.Selector.selectedOptionElement);
   },
+  get emittedEvent() {
+    return this.client.findElement(FakeApp.Selector.emittedElement);
+  },
   isSpecificSelectOptionSelected: function(value) {
     return value == this.selectedOption.text();
+  },
+  didEventFire: function(name) {
+    return this.emittedEvent.text().indexOf(name) > -1;
   },
   launch: function() {
     this.client.apps.launch(this.origin);
