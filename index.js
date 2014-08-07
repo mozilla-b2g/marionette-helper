@@ -288,14 +288,20 @@ MarionetteHelper.prototype = {
       selectedOptionEl.selected = true;
     });
 
-    el.scriptWith(function(selectEl) {
-      var evt = new Event('change', {
-        'view': window,
-        'bubbles': true,
-        'cancelable': true
-      });
-      selectEl.dispatchEvent(evt);
-    });
+    this.client.executeScript(dispatchEvent, ['change', el]);
+  },
+
+  /**
+   * Confirm the choice in target select element.
+   *
+   * @param {Marionette.Element|String} el element or some css selector.
+   */
+  tapSelectConfirm: function(el) {
+    if (!isElement(el)) {
+      el = this.client.findElement(el);
+    }
+
+    this.client.executeScript(dispatchEvent, ['blur', el]);
   },
 
   /**
@@ -338,4 +344,18 @@ MarionetteHelper.prototype = {
 function isElement(maybeElement) {
   return maybeElement && (maybeElement instanceof Marionette.Element ||
                          (!!maybeElement.id && !!maybeElement.client));
+}
+
+/**
+ * @param {string} evtName type of the event to dispatch
+ * @param {DOMElement} element element on which to dispatch the event
+ * @private
+ */
+function dispatchEvent(evtName, element) {
+  var evt = new Event(evtName, {
+    'view': window,
+    'bubbles': true,
+    'cancelable': true
+  });
+  element.dispatchEvent(evt);
 }
